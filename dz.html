@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+</head>
+<body>
+<div id="result"></div>
+<script>
+    'use strict'
+
+    function formConstr(arr){
+      const form = document.createElement('form');
+      form.setAttribute('name', "dynamform");
+      document.body.appendChild(form);
+
+
+      const arrD = [];
+      let strInput ="";
+      for (let i = 0; i < arr.length; i++){
+        switch(arr[i].kind) {
+          case 'longtext':
+            strInput = `<input type="text" name="${arr[i].name}" required>`;
+          break;
+          case 'number':
+            strInput = `<input type="number" name="${arr[i].name}" required>`;
+          break;
+          case 'shorttext':
+            strInput = `<input type="email" name="${arr[i].name}" required>`;
+          break;
+          case 'combo':
+            const arrCombo = [];
+            for (let j = 0; j < arr[i].variants.length; j++){
+              let combo = `<option value="${arr[i].variants[j].value}">${arr[i].variants[j].text}</option>`;
+              arrCombo.push(combo);
+            }
+            strInput = `<select size="0" name="${arr[i].name}" required>${arrCombo.join("")}</select>`;
+          break;
+          case 'radio':
+            const arrRadio = [];
+            for (let j = 0; j < arr[i].variants.length; j++){
+              let radio = `<input type="radio" name="${arr[i].name}" value="${arr[i].variants[j].value}">${arr[i].variants[j].text}</input>`;
+              arrRadio.push(radio);
+            }
+            strInput = arrRadio.join("");
+          break;
+          case 'check':
+            strInput = `<input type="checkbox" name="${arr[i].name}" required>`;
+          break;
+          case 'memo':
+            strInput = `</br><textarea name="${arr[i].name}" ></textarea>`;
+          break;
+          case 'submit':
+            strInput = `<input type="submit" name="${arr[i].name}">`;
+          break;
+          default:
+            strInput ="";
+        }
+        let strdiv = `<div> <label> ${arr[i].label}</label>${strInput}</div>`;
+        arrD.push(strdiv);
+      }
+      form.innerHTML = arrD.join("");
+    }
+    $.get("tsconfig.json",
+        function (obj) {
+            formConstr(obj.formDef1);
+        }).error(
+        function () {
+            $('#result').innerHTML = `${this.status} - ${this.statusText}`;
+        }
+    );
+    $.get("tsconfig2.json",
+        function (obj) {
+            formConstr(obj.formDef2);
+        }).error(
+        function () {
+            $('#result').innerHTML = `${this.status} - ${this.statusText}`;
+        }
+    );
+
+
+</script>
+</body>
+</html>
